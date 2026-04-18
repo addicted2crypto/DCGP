@@ -1,0 +1,56 @@
+{
+  "$schema": "https://raw.githubusercontent.com/addicted2crypto/DCGP/main/dcgp.schema.json",
+  // Lowercase hyphen-separated. Used as the domain identity for this repo.
+  "id": "my-project",
+  "version": "1.0.0",
+  "name": "My Project",
+  "description": "Human-readable summary of what this project governs.",
+
+  // Inherit defaults from a community path (e.g., nodejs, python, rust).
+  // "extends": "nodejs",
+
+  "signals": {
+    // Highest weight: npm/pip/cargo/etc package names that identify your stack.
+    "packages": ["@my/core"],
+    // Glob patterns that identify this project by files present.
+    "files": ["my.config.ts", "src/**/*.ts"],
+    // Keywords seen in recent session messages. Keep specific.
+    "keywords": ["my-project"],
+    // Branch patterns (matches FIFO to suppress cross-branch bleed).
+    "gitBranch": ["main", "feat/*"]
+  },
+
+  "anchors": [
+    {
+      "id": "stack",
+      "label": "Stack identity",
+      "priority": 100,
+      "content": "Precise factual description of your stack, versions, conventions, and non-negotiable constraints. Prefer short, high-signal sentences."
+    }
+  ],
+
+  "gates": [
+    {
+      "id": "no-console",
+      "pattern": "console\\.log",
+      "severity": "warn",
+      "message": "Use project logger, not console.log",
+      "context": "output"
+    }
+  ],
+
+  "driftRules": [
+    {
+      "sourceDomain": "python",
+      "pattern": "pip install|requirements\\.txt",
+      "severity": "error",
+      "correction": "Node.js project. Use npm/pnpm, not pip."
+    }
+  ],
+
+  "compression": {
+    "summarizeAs": "my-project development session",
+    "neverPrune": ["src/core/**"],
+    "retention": [{ "pattern": "read:src/**", "score": 0.8 }]
+  }
+}

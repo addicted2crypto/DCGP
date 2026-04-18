@@ -1,0 +1,74 @@
+name: DCGP Compliance
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+jobs:
+  compliance:
+    name: DCGP-1.0 compliance verification
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm --filter @dcgp/core typecheck
+
+      - name: Build
+        run: pnpm --filter @dcgp/core build
+
+      - name: Test
+        run: pnpm --filter @dcgp/core test
+
+      - name: Run verification script (bash)
+        if: runner.os != 'Windows'
+        id: verify
+        run: |
+          chmod +x ./scripts/verify-dcgp.sh
+          ./scripts/verify-dcgp.sh | tee verify-output.txt
+          {
+            echo "## DCGP Compliance Report - ${{ matrix.os }}"
+            echo '```'
+            cat verify-output.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Run verification script (windows-bash)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          ./scripts/verify-dcgp.sh | tee verify-output.txt
+
+      - name: Upload verification report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dcgp-verify-report-${{ matrix.os }}
+          path: verify-output.txt
+          retention-days: 30
+
+      - name: Block on failure
+        if: failure()
+        run: |
+          echo "::error::DCGP-1.0 compliance failed on ${{ matrix.os }}. See step summary."
+          echo "Any PR that breaks compliance must either fix the regression or update DCGP-SPEC.md with justification."
+          exit 1

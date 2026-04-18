@@ -1,0 +1,18 @@
+node_modules/
+dist/
+coverage/
+.turbo/
+*.tsbuildinfo
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example
+
+# Tool artifacts
+/tmp/dcgp-*.log
+
+# Ignore stray text files (scratchpads, notes, error dumps)
+# but keep the ones DCGP actually ships.
+*.txt
+!public-surface.txt

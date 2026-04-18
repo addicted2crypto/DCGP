@@ -1,0 +1,23 @@
+{
+  "name": "@dcgp/core",
+  "version": "1.0.0-rc.0",
+  "type": "module",
+  "description": "DCGP core: zero-dependency governance kernel for LLM agents",
+  "license": "MIT",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  }
+}

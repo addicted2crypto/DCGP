@@ -1,0 +1,41 @@
+{
+  "name": "dcgp-vscode",
+  "version": "1.0.0-rc.0",
+  "description": "DCGP VS Code extension: status bar, wizard, JSON Schema for .dcgp.json",
+  "license": "MIT",
+  "publisher": "dcgp",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "workspaceContains:**/.dcgp/*.dcgp.json",
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      { "command": "dcgp.status", "title": "DCGP: Show Status" },
+      { "command": "dcgp.init", "title": "DCGP: Initialize Configuration" },
+      { "command": "dcgp.classify", "title": "DCGP: Reclassify Workspace" },
+      { "command": "dcgp.paths", "title": "DCGP: List Community Paths" }
+    ],
+    "jsonValidation": [
+      {
+        "fileMatch": "**/.dcgp/*.dcgp.json",
+        "url": "https://raw.githubusercontent.com/addicted2crypto/DCGP/main/dcgp.schema.json"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@dcgp/core": "workspace:*",
+    "@dcgp/paths": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0"
+  }
+}

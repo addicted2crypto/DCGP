@@ -1,0 +1,115 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DCGP Context Path",
+  "description": "A .dcgp.json domain definition. DCGP-SPEC.md section 3.",
+  "type": "object",
+  "required": ["id", "name", "signals"],
+  "additionalProperties": true,
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Lowercase, hyphen-separated. Starts with a letter."
+    },
+    "version": {
+      "type": "string",
+      "description": "Semver. Defaults to 1.0.0 if omitted."
+    },
+    "name": { "type": "string", "minLength": 1 },
+    "description": { "type": "string" },
+    "extends": { "type": "string" },
+    "tags": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "signals": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "files": { "type": "array", "items": { "type": "string" } },
+        "packages": { "type": "array", "items": { "type": "string" } },
+        "keywords": { "type": "array", "items": { "type": "string" } },
+        "tools": { "type": "array", "items": { "type": "string" } },
+        "env": { "type": "array", "items": { "type": "string" } },
+        "gitBranch": { "type": "array", "items": { "type": "string" } },
+        "weights": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "packages": { "type": "number", "minimum": 0, "maximum": 1 },
+            "files": { "type": "number", "minimum": 0, "maximum": 1 },
+            "gitBranch": { "type": "number", "minimum": 0, "maximum": 1 },
+            "env": { "type": "number", "minimum": 0, "maximum": 1 },
+            "tools": { "type": "number", "minimum": 0, "maximum": 1 },
+            "keywords": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        }
+      }
+    },
+    "anchors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "content", "priority"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "label": { "type": "string", "minLength": 1 },
+          "content": { "type": "string", "minLength": 1 },
+          "priority": { "type": "number", "minimum": 0, "maximum": 100 },
+          "whenSignals": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "gates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "pattern", "severity", "message", "context"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "pattern": { "type": "string" },
+          "severity": { "enum": ["info", "warn", "error", "critical"] },
+          "message": { "type": "string", "minLength": 1 },
+          "suggest": { "type": "string" },
+          "context": { "enum": ["output", "input", "both"] }
+        }
+      }
+    },
+    "driftRules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["sourceDomain", "pattern", "severity", "correction"],
+        "additionalProperties": false,
+        "properties": {
+          "sourceDomain": { "type": "string", "minLength": 1 },
+          "pattern": { "type": "string" },
+          "severity": { "enum": ["info", "warn", "error", "critical"] },
+          "correction": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "compression": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "protectedTerms": { "type": "array", "items": { "type": "string" } },
+        "neverPrune": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "summarizeAs": { "type": "string" },
+        "retention": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["pattern", "score"],
+            "additionalProperties": false,
+            "properties": {
+              "pattern": { "type": "string", "minLength": 1 },
+              "score": { "type": "number", "minimum": 0, "maximum": 1 },
+              "reason": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
