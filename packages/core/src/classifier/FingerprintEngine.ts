@@ -6,7 +6,7 @@
  * shelling to git). DCGP-SPEC.md § 4 Step 1.
  */
 
-import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
+import { readFileSync, readdirSync, lstatSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
 /**
@@ -272,10 +272,14 @@ export class FingerprintEngine {
       const abs = join(dir, entry);
       let info;
       try {
-        info = statSync(abs);
+        // lstat (not stat) so symlinks are not followed into /etc, C:\Windows,
+        // or out of the workspace. A malicious workspace could otherwise pull
+        // the classifier into system files or cause a scan loop.
+        info = lstatSync(abs);
       } catch {
         continue;
       }
+      if (info.isSymbolicLink()) continue;
       if (info.isDirectory()) {
         this.walkFiles(root, abs, out, depth + 1);
       } else if (info.isFile()) {

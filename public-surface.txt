@@ -25,6 +25,7 @@ FingerprintEngine
 HYSTERESIS_TURNS
 HallucinationGate
 KahanAccumulator
+MAX_REGEX_PATTERN_LENGTH
 PRUNE_INTENSITY_FLOOR
 PruneIntensity
 RetentionScorer

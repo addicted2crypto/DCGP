@@ -95,7 +95,7 @@ export { SessionState } from "./state/SessionState";
 
 /* ── Schema validation ──────────────────────────────────────────────────── */
 
-export { definePath, DCGPValidationError } from "./schema/validate";
+export { definePath, DCGPValidationError, MAX_REGEX_PATTERN_LENGTH } from "./schema/validate";
 
 /* ── EXTENDED: Fine-tuning export ───────────────────────────────────────── */
 

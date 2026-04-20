@@ -303,6 +303,123 @@ Pinning `DCGP_VERSION` to a tag is strongly recommended in production - unpinned
 
 ---
 
+## MCP integration (Claude Desktop, OpenWebUI, Cline, Cursor, Zed)
+
+`@dcgp/mcp` is a Model Context Protocol server that exposes DCGP as tools + resources. Any MCP-compatible client can consume it. The server runs locally on stdio - no hosted API, no data leaves the machine.
+
+Install globally:
+
+```bash
+pnpm add -g @dcgp/mcp
+```
+
+Then wire it into your client:
+
+### Claude Desktop
+
+Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
+
+```jsonc
+{
+  "mcpServers": {
+    "dcgp": {
+      "command": "npx",
+      "args": ["-y", "@dcgp/mcp"],
+      "env": {
+        "DCGP_WORKSPACE": "/absolute/path/to/your/project"
+      }
+    }
+  }
+}
+```
+
+Restart Claude Desktop. DCGP tools appear in the tool list; resources show under the attachment icon.
+
+### Cline (VS Code extension)
+
+In Cline's MCP settings (`~/.config/cline/mcp.json` or the extension UI), add:
+
+```jsonc
+{
+  "mcpServers": {
+    "dcgp": {
+      "command": "dcgp-mcp",
+      "args": ["--workspace", "${workspaceFolder}"]
+    }
+  }
+}
+```
+
+### Cursor
+
+Cursor supports MCP via `.cursor/mcp.json`:
+
+```jsonc
+{
+  "mcpServers": {
+    "dcgp": {
+      "command": "dcgp-mcp",
+      "args": ["--workspace", "${workspaceFolder}"]
+    }
+  }
+}
+```
+
+### OpenWebUI
+
+OpenWebUI exposes MCP via its pipeline/tool interface. Install the MCP pipeline plugin, then register:
+
+```yaml
+mcp_servers:
+  dcgp:
+    command: dcgp-mcp
+    args: ["--workspace", "/path/to/repo"]
+```
+
+### Zed
+
+Zed's `settings.json`:
+
+```jsonc
+{
+  "experimental.mcp": {
+    "servers": {
+      "dcgp": {
+        "command": "dcgp-mcp",
+        "args": ["--workspace", "${workspace_root}"]
+      }
+    }
+  }
+}
+```
+
+### Tools exposed
+
+```
+dcgp_classify           classify the workspace
+dcgp_status             current entropy + directive + stats
+dcgp_process_turn       run one turn through the loop (gates, drift, monitor)
+dcgp_gate_text          scan arbitrary text for gate violations
+dcgp_paths              list all 16 community domains
+dcgp_get_directive      read the current RetentionDirective
+dcgp_inject_anchors     render the XML system-prompt injection block
+dcgp_reset              reset monitor state (partial or full)
+```
+
+### Resources exposed
+
+```
+dcgp://session-state    current DCGPSessionState (JSON)
+dcgp://active-path      active ContextPath (JSON)
+dcgp://anchors          rendered XML injection block
+dcgp://hardrules        HARDRULES.md contents
+dcgp://agents           AGENTS.md contents
+dcgp://spec             DCGP-SPEC.md contents
+dcgp://compliance       declared conformance tier
+```
+
+---
+
 ## Engineering constraints - absolute rules
 
 **Never do this:**

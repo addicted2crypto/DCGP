@@ -10,7 +10,7 @@
  * unbounded growth.
  */
 
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, renameSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 
 import type { DCGPSessionState, DomainShift, SessionStats } from "../types/Session";
@@ -21,6 +21,14 @@ import type { EntropyEvent } from "../types/Entropy";
 /** Max entries kept for each rolling log. Older entries drop FIFO. */
 export const HISTORY_CAP = 500;
 
+/**
+ * Max size in bytes of a persisted state file we will read on startup.
+ * A corrupt or maliciously bloated state file past this size is ignored
+ * (we start with a fresh empty state) rather than risk an OOM JSON parse.
+ * 10 MB is ~20x the realistic upper bound for a HISTORY_CAP-bounded state.
+ */
+export const MAX_STATE_FILE_BYTES = 10 * 1024 * 1024;
+
 export class SessionState {
   private state: DCGPSessionState;
   private readonly path: string | null;
@@ -30,6 +38,12 @@ export class SessionState {
     this.path = persistPath ?? null;
     if (this.path !== null && existsSync(this.path)) {
       try {
+        const info = statSync(this.path);
+        if (info.size > MAX_STATE_FILE_BYTES) {
+          // Refuse oversized state file - a malicious or corrupt persisted
+          // state could OOM us. Start fresh instead.
+          return;
+        }
         const loaded = JSON.parse(readFileSync(this.path, "utf8")) as DCGPSessionState;
         this.state = loaded;
       } catch {

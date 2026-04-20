@@ -1,0 +1,32 @@
+{
+  "name": "@dcgp/mcp",
+  "version": "1.0.0-rc.0",
+  "type": "module",
+  "description": "DCGP MCP server: Claude Desktop, OpenWebUI, Cline, and any MCP-compatible client consume DCGP governance as tools and resources.",
+  "license": "MIT",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "bin": {
+    "dcgp-mcp": "./dist/bin.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@dcgp/core": "workspace:*",
+    "@dcgp/opencode": "workspace:*",
+    "@dcgp/paths": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  }
+}

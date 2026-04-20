@@ -66,9 +66,36 @@ function typeOf(v: unknown): string {
   return typeof v;
 }
 
+/**
+ * Maximum length of a user-provided regex source string. Patterns longer than
+ * this are refused to bound ReDoS attack surface.
+ */
+export const MAX_REGEX_PATTERN_LENGTH = 300;
+
+/**
+ * Heuristic for catastrophic backtracking. Rejects the classic polynomial /
+ * exponential shapes like (a+)+, (a*)*, (a+)*, (a|a)+, (.+)*.
+ * Imperfect but catches the well-known ReDoS footguns. Legitimate patterns
+ * that trip this can bypass by passing a RegExp object directly.
+ */
+const NESTED_QUANTIFIER_RE = /\([^)]*[+*][^)]*\)[+*?]/;
+const ALTERNATION_QUANTIFIER_RE = /\(\s*\w\s*\|\s*\w\s*\)[+*]/;
+
 function toRegExp(raw: unknown, path: string): RegExp {
   if (raw instanceof RegExp) return raw;
   if (typeof raw === "string") {
+    if (raw.length > MAX_REGEX_PATTERN_LENGTH) {
+      throw new DCGPValidationError(
+        path,
+        `regex pattern too long (${raw.length} > ${MAX_REGEX_PATTERN_LENGTH} chars); potential ReDoS. Split into multiple gates or pass a pre-compiled RegExp.`,
+      );
+    }
+    if (NESTED_QUANTIFIER_RE.test(raw) || ALTERNATION_QUANTIFIER_RE.test(raw)) {
+      throw new DCGPValidationError(
+        path,
+        `regex pattern has nested quantifiers suggestive of catastrophic backtracking (ReDoS risk). Refactor or pass a pre-compiled RegExp if this is intentional.`,
+      );
+    }
     try {
       return new RegExp(raw);
     } catch (err) {

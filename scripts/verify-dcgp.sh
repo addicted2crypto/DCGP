@@ -201,6 +201,13 @@ check "@dcgp/cli test present" "cli.test.ts" "packages/cli/tests/cli.test.ts" ex
 # ── Phase D.2: VS Code extension ──────────────────────────────────────────
 check "dcgp-vscode extension present" "extension.ts" "packages/vscode/src/extension.ts" exists
 
+# ── Phase E: MCP server (Claude Desktop, OpenWebUI, Cline) ────────────────
+check "@dcgp/mcp server present" "server.ts" "packages/mcp/src/server.ts" exists
+check "@dcgp/mcp tools module present" "tools.ts" "packages/mcp/src/tools.ts" exists
+check "@dcgp/mcp resources module present" "resources.ts" "packages/mcp/src/resources.ts" exists
+check "@dcgp/mcp bin entrypoint present" "bin.ts" "packages/mcp/src/bin.ts" exists
+check "@dcgp/mcp test present" "mcp.test.ts" "packages/mcp/tests/mcp.test.ts" exists
+
 # ── Run the test suite (the real behavioral gate) ─────────────────────────
 if command -v pnpm > /dev/null 2>&1; then
   echo ""
