@@ -59,10 +59,13 @@ else
   echo "  -  HARDRULES.md already exists - NEVER overwritten by install.sh"
 fi
 
-# ── Step 2: Drop universal AI-tool mount files (with conflict detection) ──
-# Coverage: Claude, Cursor, Cline, Windsurf, Zed, Aider, Continue, Copilot,
-# plus the generic AGENTS.md (OpenAI / OpenCode / any tool following that conv).
-MOUNTS=(AGENTS.md CLAUDE.md .cursorrules .clinerules .windsurfrules .zedrules)
+# ── Step 2: Drop canonical governance files ───────────────────────────────
+# AGENTS.md is the universal governance spec (Claude Code, Cursor, Zed, and
+# OpenAI Codex all read it). CLAUDE.md is kept for Claude Code's legacy
+# filename. Any other tool can mount governance by running one command:
+#   cp AGENTS.md .<toolname>rules
+# See README "Per-tool mount pointers" for the one-liner per tool.
+MOUNTS=(AGENTS.md CLAUDE.md)
 
 drop_mount() {
   local src="$1"
@@ -82,11 +85,6 @@ drop_mount() {
 for f in "${MOUNTS[@]}"; do
   drop_mount "$f"
 done
-
-# Copilot, Aider, Continue: each has a different canonical location.
-drop_mount "CLAUDE.md" ".github/copilot-instructions.md"
-drop_mount ".aider.conf.yml" ".aider.conf.yml"
-drop_mount ".continue/rules/dcgp.md" ".continue/rules/dcgp.md"
 
 # ── Step 3: Install npm package if package.json present ────────────────────
 if [ -f package.json ]; then

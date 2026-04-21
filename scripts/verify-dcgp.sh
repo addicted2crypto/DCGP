@@ -70,13 +70,6 @@ check "CONTRIBUTING.md present" "CONTRIBUTING.md" "CONTRIBUTING.md" exists
 check "LICENSE present" "LICENSE" "LICENSE" exists
 check "COMPLIANCE declaration present" "COMPLIANCE" "COMPLIANCE" exists
 check "CLAUDE.md mount point" "CLAUDE.md" "CLAUDE.md" exists
-check ".cursorrules mount point" ".cursorrules" ".cursorrules" exists
-check ".clinerules mount point" ".clinerules" ".clinerules" exists
-check ".windsurfrules mount point" ".windsurfrules" ".windsurfrules" exists
-check ".zedrules mount point" ".zedrules" ".zedrules" exists
-check ".aider.conf.yml mount point" ".aider.conf.yml" ".aider.conf.yml" exists
-check ".continue/rules/dcgp.md mount point" ".continue/rules/dcgp.md" ".continue/rules/dcgp.md" exists
-check ".github/copilot-instructions.md present" ".github/copilot-instructions.md" ".github/copilot-instructions.md" exists
 
 # DCP parity markers (DCP package name + project config location)
 check "dcp-bridge declares verified DCP package name" \

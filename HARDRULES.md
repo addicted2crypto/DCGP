@@ -57,7 +57,7 @@ CI is the audit gate. Silent workflow changes defeat the verify-dcgp.sh contract
 
 ### !important AGENTS-001: Do not bypass agent governance files
 
-Do not delete, blank, or comment-out `AGENTS.md`, `CLAUDE.md`, `.cursorrules`, `.clinerules`, `.windsurfrules`, `.zedrules`, `.aider.conf.yml`, `.continue/rules/dcgp.md`, or `.github/copilot-instructions.md`. If a governance rule is wrong, edit it. Do not remove it.
+Do not delete, blank, or comment-out `AGENTS.md`, `HARDRULES.md`, `CLAUDE.md`, or `DCGP-SPEC.md`. If a governance rule is wrong, edit it. Do not remove it. Tool-specific mount files (`.cursorrules`, `.clinerules`, etc.) are NOT part of this rule - users add them to their own repos if they need them via `cp AGENTS.md .<tool>rules`.
 
 ---
 
