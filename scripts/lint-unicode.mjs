@@ -25,9 +25,6 @@ const INCLUDE_ROOT_FILES = [
   "AGENTS.md",
   "CLAUDE.md",
   "DCGP-SPEC.md",
-  ".cursorrules",
-  ".clinerules",
-  ".windsurfrules",
   "COMPLIANCE",
 ];
 const INCLUDE_EXTS = new Set([".md", ".ts", ".mjs", ".js", ".sh", ".yml", ".yaml", ".json", ".jsonc"]);

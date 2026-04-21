@@ -1,6 +1,8 @@
 # DCGP - Agent Mounting Guide
 
-**Dynamic Context Guidance Paths** is the semantic operating system for LLM agents. This file is the single source of truth for any agent operating in this repository. Mount it via `AGENTS.md` (OpenAI / generic), `CLAUDE.md` (Claude), `.cursorrules` (Cursor), `.clinerules` (Cline), `.windsurfrules` (Windsurf), or `.github/copilot-instructions.md` (Copilot) - the content is identical; the filename is an accommodation to each tool's conventions.
+**Dynamic Context Guidance Paths** is the semantic operating system for LLM agents. This file is the single source of truth for any agent operating in this repository.
+
+Modern AI tools that support `AGENTS.md` (Claude Code, Cursor, Zed, OpenAI Codex CLI, and a growing list) read this file directly. Tools that insist on their own filename can be aliased in one line (`cp AGENTS.md .clinerules` etc.) - DCGP itself ships only this file plus `HARDRULES.md` and `CLAUDE.md` to keep the governance surface slim. For runtime tool access rather than static file reads, use `@dcgp/mcp` (see README).
 
 **Live implementation state is defined by `./scripts/verify-dcgp.sh`.** If this document claims a feature the script does not verify, the script wins. Re-read this file only after `verify-dcgp.sh` exits 0.
 

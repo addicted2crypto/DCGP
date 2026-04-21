@@ -80,30 +80,25 @@ Failure Modes are normative (`DCGP-SPEC.md` section 10b). Adding one is a spec a
 4. Add a row to `DCGP-SPEC.md` section 10b with the constant, trigger, and required behavior.
 5. Add a grep check for the constant to `scripts/verify-dcgp.sh`.
 
-### Mount file convention (canonical source)
+### Governance files (canonical + minimal)
 
-`AGENTS.md` is the single long-form governance document. `HARDRULES.md` sits above it with user-owned absolute rules.
+DCGP ships only three governance files at the repo root:
 
-Every editor-specific mount file (`CLAUDE.md`, `.cursorrules`, `.clinerules`, `.windsurfrules`, `.zedrules`, `.aider.conf.yml`, `.continue/rules/dcgp.md`, `.github/copilot-instructions.md`) is a THIN POINTER that tells the host tool to read `HARDRULES.md` then `AGENTS.md`. They are byte-identical (modulo `.aider.conf.yml`, which uses Aider's YAML format) and regenerated from `CLAUDE.md`:
+- **`AGENTS.md`** - the long-form operational spec. Read by Claude Code, Cursor (modern), Zed (modern), OpenAI Codex CLI, and any AGENTS.md-aware tool.
+- **`HARDRULES.md`** - user-owned absolute rules. Overrides everything.
+- **`CLAUDE.md`** - thin pointer stub for Claude Code's traditional filename.
+
+We deliberately do NOT ship `.cursorrules`, `.clinerules`, `.windsurfrules`, `.zedrules`, `.aider.conf.yml`, `.continue/rules/*`, or `.github/copilot-instructions.md`. Those were byte-identical copies that added drift risk without adding signal. If a forker's AI tool requires one of those filenames, it is a one-line alias they run in their own repo:
 
 ```bash
-cp CLAUDE.md .cursorrules
-cp CLAUDE.md .clinerules
-cp CLAUDE.md .windsurfrules
-cp CLAUDE.md .zedrules
-cp CLAUDE.md .github/copilot-instructions.md
-cp CLAUDE.md .continue/rules/dcgp.md
+cp AGENTS.md .clinerules
+cp AGENTS.md .windsurfrules
+# ...and so on
 ```
 
-**Rule:** edit `AGENTS.md` for real content. Edit `CLAUDE.md` only to adjust the pointer stub. Never edit the per-tool mount files by hand.
+The modern integration path for any MCP-compatible tool (Claude Code, Claude Desktop, Cline, Cursor, Zed, OpenWebUI) is `@dcgp/mcp`, which exposes DCGP as live tools + resources. Prefer that over static governance files.
 
-### Add a new editor or agent mount
-
-1. Copy the content of `CLAUDE.md` to the target editor's expected location (e.g., `.myeditorrules` or `~/.myeditor/config.toml`).
-2. Add the file to the `MOUNTS` array in `scripts/install.sh`.
-3. Add a presence check to `scripts/verify-dcgp.sh`.
-
-The content is identical across all mount files. The filename is a concession to each tool's conventions.
+**Rule:** edit `AGENTS.md` for content. Edit `CLAUDE.md` only if the pointer stub itself needs wording changes. Do not reintroduce tool-specific alias files into the repo.
 
 ### Propose a new conformance tier
 
