@@ -34,7 +34,18 @@ Three ways to adopt DCGP, ordered from fastest to most integrated:
 DCGP_VERSION=v1.0.0-rc curl -fsSL https://raw.githubusercontent.com/addicted2crypto/DCGP/${DCGP_VERSION}/scripts/install.sh | bash
 ```
 
-This drops the universal mount files (`AGENTS.md`, `CLAUDE.md`, `.cursorrules`, `.clinerules`, `.windsurfrules`, `.github/copilot-instructions.md`) into your repo, scaffolds `.dcgp/<your-project>.dcgp.json`, and optionally installs `@dcgp/core` if you have a `package.json`. Every AI tool that touches your repo now operates inside the 7-step loop.
+This drops the two canonical governance files (`AGENTS.md` + `CLAUDE.md`) into your repo, scaffolds `.dcgp/<your-project>.dcgp.json` (or `.opencode/dcgp.jsonc`), and optionally installs `@dcgp/core` if you have a `package.json`. Every AI tool that reads `AGENTS.md` (Claude Code, Cursor, Zed, OpenAI Codex CLI, and growing) now operates inside the 7-step loop.
+
+**If your tool needs its own filename** (legacy Cursor, Cline, Windsurf, Aider, Continue, Copilot), add a one-line alias after install:
+
+```bash
+cp AGENTS.md .cursorrules       # Cursor (legacy)
+cp AGENTS.md .clinerules        # Cline
+cp AGENTS.md .windsurfrules     # Windsurf
+cp AGENTS.md .github/copilot-instructions.md   # Copilot (mkdir first)
+```
+
+Modern integration path: use `@dcgp/mcp` — the server exposes DCGP as tools + resources that any MCP-compatible client consumes natively. See [MCP integration](#mcp-integration-claude-desktop-openwebui-cline-cursor-zed) below.
 
 **Pin `DCGP_VERSION` to a tag in production.** Unpinned installs silently drift if upstream governance files change.
 
