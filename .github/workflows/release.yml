@@ -1,0 +1,69 @@
+name: Release
+
+# Changesets-based lockstep release pipeline for the 5 @dcgp/* npm packages.
+#
+# Flow:
+#   1. Every merge to master with a pending `.changeset/*.md` triggers this.
+#   2. If changesets exist, the action opens / updates a "Version Packages" PR.
+#   3. When that PR is merged, this workflow runs again, sees no changesets,
+#      and instead runs `pnpm publish -r` to push every bumped package to npm
+#      in dependency order.
+#
+# Required secret:
+#   NPM_TOKEN - "Automation" token from npmjs.com with publish rights to @dcgp.
+#
+# `dcgp-vscode` is excluded at the changesets config level (ignore list).
+
+on:
+  push:
+    branches: [master]
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Version or publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - name: Checkout (full history for changelog)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages (publish requires dist/)
+        run: pnpm -r build
+
+      - name: Run full test suite (do not ship broken builds)
+        run: pnpm vitest run
+
+      - name: Create Release PR or Publish
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          version: pnpm changeset version
+          publish: pnpm changeset publish
+          commit: 'chore: release'
+          title: 'chore: release'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

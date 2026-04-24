@@ -1,0 +1,46 @@
+name: CI
+
+# Fast feedback on every push and PR: typecheck + test + unicode lint.
+# Ubuntu only, ~90 seconds. The heavy cross-platform compliance run lives in
+# compliance.yml and only triggers on pull_request / workflow_dispatch.
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: typecheck + test + lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck all packages
+        run: pnpm -r typecheck
+
+      - name: Build all packages
+        run: pnpm -r build
+
+      - name: Run test suite
+        run: pnpm vitest run
+
+      - name: Unicode lint (no em-dashes, no emojis in source or docs)
+        run: node scripts/lint-unicode.mjs --dry

@@ -28,7 +28,10 @@ scripts/
   install.sh        One-line install for any target project
   lint-unicode.mjs  Strips em dashes and emojis from source + docs
 
-.github/workflows/dcgp-compliance.yml   CI gate across ubuntu/windows/macos
+.github/workflows/ci.yml                Fast CI: typecheck + test + unicode lint (every push)
+.github/workflows/compliance.yml        Heavy CI: verify-dcgp.sh across ubuntu/windows/macos (PR only)
+.github/workflows/release.yml           Changesets: version PR + npm publish on master merges
+.github/dependabot.yml                  Weekly grouped dep updates
 ```
 
 ---

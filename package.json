@@ -8,15 +8,20 @@
     "typecheck": "pnpm -r run typecheck",
     "lint": "eslint packages/*/src/**/*.ts",
     "clean": "pnpm -r run clean",
-    "verify": "./scripts/verify-dcgp.sh"
+    "verify": "./scripts/verify-dcgp.sh",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "pnpm -r build && changeset publish"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^0.6.0",
+    "@changesets/cli": "^2.31.0",
     "@types/node": "^22.0.0",
-    "typescript": "~5.6.0",
-    "vitest": "^2.0.0",
-    "tsup": "^8.0.0",
     "eslint": "^9.0.0",
-    "prettier": "^3.0.0"
+    "prettier": "^3.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "~5.6.0",
+    "vitest": "^2.0.0"
   },
   "engines": {
     "node": ">=22.0.0",

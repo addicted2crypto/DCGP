@@ -11,7 +11,7 @@
 # runs all.
 #
 # Designed for:
-#   - CI/CD pipelines (.github/workflows/dcgp-compliance.yml)
+#   - CI/CD pipelines (.github/workflows/compliance.yml)
 #   - Third-party auditors
 #   - Release tagging gates
 #   - Local pre-commit validation

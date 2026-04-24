@@ -1,15 +1,21 @@
 name: DCGP Compliance
 
+# Heavy cross-platform compliance check. Runs on pull requests to
+# main/master/develop and on manual dispatch. Every-push fast feedback
+# lives in ci.yml.
+
 on:
-  push:
-    branches: [main, develop]
   pull_request:
-    branches: [main, develop]
+    branches: [main, master, develop]
   workflow_dispatch:
+
+concurrency:
+  group: compliance-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   compliance:
-    name: DCGP-1.0 compliance verification
+    name: DCGP-1.0 FULL+EXTENDED
     strategy:
       fail-fast: false
       matrix:
@@ -30,18 +36,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Typecheck
-        run: pnpm --filter @dcgp/core typecheck
+      - name: Typecheck all packages
+        run: pnpm -r typecheck
 
-      - name: Build
-        run: pnpm --filter @dcgp/core build
+      - name: Build all packages
+        run: pnpm -r build
 
-      - name: Test
-        run: pnpm --filter @dcgp/core test
+      - name: Run full test suite
+        run: pnpm vitest run
 
       - name: Run verification script (bash)
         if: runner.os != 'Windows'
-        id: verify
         run: |
           chmod +x ./scripts/verify-dcgp.sh
           ./scripts/verify-dcgp.sh | tee verify-output.txt

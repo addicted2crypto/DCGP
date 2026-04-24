@@ -1,0 +1,51 @@
+version: 2
+
+# Weekly grouped dependency updates.
+# - npm (workspace): groups dev deps together, prod deps separately, so we don't
+#   drown in single-package PRs.
+# - github-actions: groups all action updates into one PR.
+# Security alerts still fire immediately regardless of this cadence.
+
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: America/New_York
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+    groups:
+      dev-deps:
+        dependency-type: development
+        update-types:
+          - minor
+          - patch
+      prod-deps:
+        dependency-type: production
+        update-types:
+          - minor
+          - patch
+    ignore:
+      # Major version bumps of the MCP SDK may change protocol shape - review manually.
+      - dependency-name: "@modelcontextprotocol/sdk"
+        update-types: ["version-update:semver-major"]
+      # TypeScript majors often break type inference - review manually.
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    labels:
+      - dependencies
+      - github-actions
+    groups:
+      actions:
+        patterns:
+          - "*"
