@@ -55,7 +55,24 @@ jobs:
       - name: Run full test suite (do not ship broken builds)
         run: pnpm vitest run
 
-      - name: Create Release PR or Publish
+      # Until NPM_TOKEN is set + @dcgp scope is claimed on npm, run the
+      # action in VERSION-ONLY mode: it still opens Version Packages PRs,
+      # but does not try to publish and so does not fail on missing creds.
+      # When you are ready to publish, add NPM_TOKEN to repo secrets and
+      # the publish step below will kick in automatically.
+      - name: Create Release PR (no publish until NPM_TOKEN is set)
+        if: env.NPM_TOKEN == ''
+        uses: changesets/action@v1
+        with:
+          version: pnpm changeset version
+          commit: 'chore: release'
+          title: 'chore: release'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create Release PR or Publish (NPM_TOKEN present)
+        if: env.NPM_TOKEN != ''
         id: changesets
         uses: changesets/action@v1
         with:
