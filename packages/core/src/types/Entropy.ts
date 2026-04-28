@@ -1,3 +1,4 @@
+// @dcgp-audit-ignore-file comment-density-imbalance - public type file with spec-contract JSDoc on every constant.
 /**
  * Types for the EntropyMonitor (DCGP-SPEC.md § 7).
  *

@@ -41,6 +41,9 @@ importers:
       '@dcgp/paths':
         specifier: workspace:*
         version: link:../paths
+      '@dcgp/vibe-audit':
+        specifier: workspace:*
+        version: link:../vibe-audit
 
   packages/core: {}
 
@@ -55,6 +58,9 @@ importers:
       '@dcgp/paths':
         specifier: workspace:*
         version: link:../paths
+      '@dcgp/vibe-audit':
+        specifier: workspace:*
+        version: link:../vibe-audit
       '@modelcontextprotocol/sdk':
         specifier: ^1.0.0
         version: 1.29.0(zod@4.3.6)
@@ -73,6 +79,15 @@ importers:
       '@dcgp/core':
         specifier: workspace:*
         version: link:../core
+
+  packages/vibe-audit:
+    dependencies:
+      '@dcgp/core':
+        specifier: workspace:*
+        version: link:../core
+      typescript:
+        specifier: '>=5.0.0'
+        version: 5.6.3
 
   packages/vscode:
     dependencies:

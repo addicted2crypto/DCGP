@@ -9,6 +9,8 @@
 
 DCGP is a closed-loop governance layer that eliminates context decay and hallucinations in long-running LLM sessions. It monitors context health per turn and orchestrates interventions, predicting degradation before the model begins to hallucinate.
 
+DCGP also ships **`@dcgp/vibe-audit`** for static analysis of AI-coded ("vibe-coded") repositories - 8 rules that catch the artifacts AI-assisted code commonly leaves behind (stub markers, hardcoded credentials, type-safety bypasses, command injection, test theater, predictable randomness, ReDoS risk, comment-density imbalance). Runtime governance via the 7-step loop; static governance via `dcgp audit`. Same severity tier system, same `Finding` shape, same JSON / SARIF / Markdown formatters.
+
 **Live state of this repo is defined by `./scripts/verify-dcgp.sh`.** It is the single source of truth for what is implemented. The prose below describes intent; the script enforces reality.
 
 > **Relationship to DCP ([@tarquinen/opencode-dcp](https://github.com/Opencode-DCP/opencode-dynamic-context-pruning)):** DCP manages context *quantity* (token budget, rule-based pruning of stale outputs). DCGP manages context *quality* (domain grounding, entropy prediction, hallucination blocking). Run both, they are orthogonal and additive.

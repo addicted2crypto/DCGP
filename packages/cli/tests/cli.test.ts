@@ -1,3 +1,4 @@
+// @dcgp-audit-ignore-file command-injection - the execSync call below already wraps each arg in JSON.stringify; the regex cannot see that the fix is inside the interpolation.
 import { describe, it, expect, beforeAll } from "vitest";
 import { execSync } from "node:child_process";
 import { mkdtempSync, writeFileSync, mkdirSync, existsSync } from "node:fs";

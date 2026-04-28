@@ -194,6 +194,33 @@ check "@dcgp/cli test present" "cli.test.ts" "packages/cli/tests/cli.test.ts" ex
 # ── Phase D.2: VS Code extension ──────────────────────────────────────────
 check "dcgp-vscode extension present" "extension.ts" "packages/vscode/src/extension.ts" exists
 
+# ── Phase F: vibe-audit (static analysis for AI-coded flaws) ─────────────
+check "@dcgp/vibe-audit package present" "package.json" "packages/vibe-audit/package.json" exists
+check "@dcgp/vibe-audit runner.ts present" "runner.ts" "packages/vibe-audit/src/runner.ts" exists
+check "@dcgp/vibe-audit ships 8 builtin rules" \
+  "$(find packages/vibe-audit/src/rules -name '*.ts' ! -name 'index.ts' 2>/dev/null | wc -l | tr -d ' ')" "8" ge
+check "@dcgp/vibe-audit rules.test.ts present" "rules.test.ts" "packages/vibe-audit/tests/rules.test.ts" exists
+check "@dcgp/vibe-audit runner.test.ts present" "runner.test.ts" "packages/vibe-audit/tests/runner.test.ts" exists
+check "@dcgp/vibe-audit formatters.test.ts present" "formatters.test.ts" "packages/vibe-audit/tests/formatters.test.ts" exists
+
+# Self-audit: vibe-audit must produce zero critical/error findings on DCGP itself.
+if command -v node > /dev/null 2>&1 && [ -f packages/cli/dist/cli.js ]; then
+  if node packages/cli/dist/cli.js audit packages --severity error > /tmp/dcgp-self-audit.log 2>&1; then
+    SELF_AUDIT_LINES=$(wc -l < /tmp/dcgp-self-audit.log | tr -d ' ')
+    # Header + stats lines = expect findings to be zero error/critical
+    if grep -q "critical=0" /tmp/dcgp-self-audit.log && grep -q "error=0" /tmp/dcgp-self-audit.log; then
+      PASS=$((PASS + 1))
+      CHECKS+=("  [PASS]  vibe-audit self-scan zero error/critical")
+    else
+      FAIL=$((FAIL + 1))
+      CHECKS+=("  [FAIL]  vibe-audit self-scan found error/critical findings (see /tmp/dcgp-self-audit.log)")
+    fi
+  else
+    FAIL=$((FAIL + 1))
+    CHECKS+=("  [FAIL]  vibe-audit self-scan execution failed (see /tmp/dcgp-self-audit.log)")
+  fi
+fi
+
 # ── Phase E: MCP server (Claude Desktop, OpenWebUI, Cline) ────────────────
 check "@dcgp/mcp server present" "server.ts" "packages/mcp/src/server.ts" exists
 check "@dcgp/mcp tools module present" "tools.ts" "packages/mcp/src/tools.ts" exists

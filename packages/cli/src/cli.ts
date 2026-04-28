@@ -12,6 +12,7 @@
  *   dcgp validate <file>      Validate .dcgp.json against schema
  *   dcgp init [dir]           Scaffold .dcgp/ with starter template
  *   dcgp entropy              Explain EntropyMonitor scoring model
+ *   dcgp audit [dir]          Static-analysis audit for vibe-coded flaws
  *   dcgp help                 Show this help
  */
 
@@ -30,8 +31,18 @@ import {
   type ContextPath,
 } from "@dcgp/core";
 import { ALL_PATHS } from "@dcgp/paths";
+import {
+  auditWorkspace,
+  BUILTIN_RULES,
+  formatJson,
+  formatTty,
+  formatMarkdown,
+  formatSarif,
+  type RuleId,
+  type Severity,
+} from "@dcgp/vibe-audit";
 
-function run(): number {
+async function run(): Promise<number> {
   const [command, ...args] = process.argv.slice(2);
   const verbose = args.includes("--verbose") || args.includes("-v");
   const positional = args.filter((a) => !a.startsWith("-"));
@@ -53,6 +64,8 @@ function run(): number {
       return cmdInit(positional[0]);
     case "entropy":
       return cmdEntropy();
+    case "audit":
+      return cmdAudit(positional[0], args);
     case "help":
     case "-h":
     case "--help":
@@ -258,6 +271,12 @@ function cmdHelp(code = 0): number {
   out.write(`  validate <file>      Validate .dcgp.json against schema\n`);
   out.write(`  init [dir]           Scaffold .dcgp/ with starter template\n`);
   out.write(`  entropy              Explain EntropyMonitor scoring model\n`);
+  out.write(`  audit [dir]          Static-analysis audit for vibe-coded flaws\n`);
+  out.write(`    --rule <id>          Run a single rule\n`);
+  out.write(`    --severity <level>   Drop findings below level (info|warn|error|critical)\n`);
+  out.write(`    --format <fmt>       Output: tty (default) | json | markdown | sarif\n`);
+  out.write(`    --fail-on <level>    Exit non-zero if any finding at or above level\n`);
+  out.write(`    --no-ts              Force regex-only mode (skip TS AST detection)\n`);
   out.write(`  help                 Show this help\n`);
   return code;
 }
@@ -287,6 +306,75 @@ function renderTemplate(id: string): string {
   );
 }
 
+async function cmdAudit(dir: string | undefined, args: readonly string[]): Promise<number> {
+  const root = resolveDir(dir);
+
+  const ruleFlag = flagValue(args, "--rule");
+  const severityFlag = flagValue(args, "--severity");
+  const formatFlag = flagValue(args, "--format") ?? "tty";
+  const failOnFlag = flagValue(args, "--fail-on");
+  const noTs = args.includes("--no-ts");
+
+  const validSeverities: readonly Severity[] = ["info", "warn", "error", "critical"];
+  if (severityFlag !== undefined && !(validSeverities as readonly string[]).includes(severityFlag)) {
+    process.stderr.write(`Invalid --severity '${severityFlag}'. Use one of: ${validSeverities.join(", ")}\n`);
+    return 2;
+  }
+  if (failOnFlag !== undefined && !(validSeverities as readonly string[]).includes(failOnFlag)) {
+    process.stderr.write(`Invalid --fail-on '${failOnFlag}'. Use one of: ${validSeverities.join(", ")}\n`);
+    return 2;
+  }
+
+  const validRuleIds = new Set(BUILTIN_RULES.map((r) => r.id));
+  if (ruleFlag !== undefined && !validRuleIds.has(ruleFlag as RuleId)) {
+    process.stderr.write(
+      `Unknown rule '${ruleFlag}'. Known rules: ${[...validRuleIds].join(", ")}\n`,
+    );
+    return 2;
+  }
+
+  const report = await auditWorkspace(BUILTIN_RULES, {
+    dir: root,
+    rule: ruleFlag as RuleId | undefined,
+    minSeverity: severityFlag as Severity | undefined,
+    noTs,
+  });
+
+  let out: string;
+  switch (formatFlag) {
+    case "json":
+      out = formatJson(report);
+      break;
+    case "markdown":
+      out = formatMarkdown(report);
+      break;
+    case "sarif":
+      out = formatSarif(report);
+      break;
+    case "tty":
+    default:
+      out = formatTty(report);
+      break;
+  }
+  process.stdout.write(out + "\n");
+
+  if (failOnFlag !== undefined) {
+    const order: Record<Severity, number> = { info: 0, warn: 1, error: 2, critical: 3 };
+    const threshold = order[failOnFlag as Severity];
+    const tripped = report.findings.some((f) => order[f.severity] >= threshold);
+    if (tripped) return 1;
+  }
+  return 0;
+}
+
+function flagValue(args: readonly string[], flag: string): string | undefined {
+  const i = args.indexOf(flag);
+  if (i === -1) return undefined;
+  const v = args[i + 1];
+  if (v === undefined || v.startsWith("-")) return undefined;
+  return v;
+}
+
 function formatConf(c: number): string {
   return c < 0 ? "unknown (-1)" : `${(c * 100).toFixed(1)}%`;
 }
@@ -297,4 +385,10 @@ function entropyBar(score: number): string {
   return `[${"=".repeat(filled)}${".".repeat(total - filled)}]`;
 }
 
-process.exit(run());
+run().then(
+  (code) => process.exit(code),
+  (err) => {
+    process.stderr.write(`dcgp: ${err instanceof Error ? err.message : String(err)}\n`);
+    process.exit(1);
+  },
+);

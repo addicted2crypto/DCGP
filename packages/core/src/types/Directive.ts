@@ -1,3 +1,4 @@
+// @dcgp-audit-ignore-file comment-density-imbalance - public type files are intentionally heavily JSDoc'd; comments here are the spec contract, not chatter.
 /**
  * The Retention Bridge - DCGP-SPEC.md § 7.7.
  *

@@ -1,3 +1,4 @@
+// @dcgp-audit-ignore-file type-safety-bypasses - test fixtures intentionally use `as any` to feed the validator malformed inputs that real users could not type-check past.
 import { describe, it, expect } from "vitest";
 import { definePath, DCGPValidationError } from "../src";
 

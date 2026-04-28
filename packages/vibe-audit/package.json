@@ -1,8 +1,8 @@
 {
-  "name": "@dcgp/mcp",
+  "name": "@dcgp/vibe-audit",
   "version": "1.0.0-rc.0",
   "type": "module",
-  "description": "DCGP MCP server: Claude Desktop, OpenWebUI, Cline, and any MCP-compatible client consume DCGP governance as tools and resources.",
+  "description": "Static-analysis audit for AI-coded repositories. Detects stub markers, hardcoded credentials, type-safety bypasses, command injection, test theater, predictable randomness, ReDoS risk, comment-density imbalance.",
   "license": "MIT",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -14,9 +14,6 @@
       "require": "./dist/index.cjs"
     }
   },
-  "bin": {
-    "dcgp-mcp": "./dist/bin.js"
-  },
   "files": ["dist"],
   "scripts": {
     "build": "tsup",
@@ -24,10 +21,14 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@dcgp/core": "workspace:*",
-    "@dcgp/opencode": "workspace:*",
-    "@dcgp/paths": "workspace:*",
-    "@dcgp/vibe-audit": "workspace:*",
-    "@modelcontextprotocol/sdk": "^1.0.0"
+    "@dcgp/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "typescript": ">=5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
   }
 }

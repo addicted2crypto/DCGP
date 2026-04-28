@@ -1,3 +1,4 @@
+// @dcgp-audit-ignore-file regex-redos-risk - test fixtures intentionally include nested-quantifier patterns to exercise the validator's ReDoS guard.
 import { describe, it, expect } from "vitest";
 import { definePath, MAX_REGEX_PATTERN_LENGTH } from "../src";
 

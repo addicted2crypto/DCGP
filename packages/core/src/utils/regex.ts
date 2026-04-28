@@ -1,3 +1,4 @@
+// @dcgp-audit-ignore-file regex-redos-risk - utility wrappers; SAFETY (length cap, nested-quantifier heuristic) is enforced upstream in @dcgp/core's validate.ts before any user pattern reaches this file.
 export function toGlobalPattern(pattern: string | RegExp): RegExp {
   if (typeof pattern === "string") {
     return new RegExp(pattern, "g");

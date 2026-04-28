@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@dcgp/core": "workspace:*",
-    "@dcgp/paths": "workspace:*"
+    "@dcgp/paths": "workspace:*",
+    "@dcgp/vibe-audit": "workspace:*"
   }
 }

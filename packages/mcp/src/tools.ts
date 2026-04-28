@@ -7,6 +7,12 @@
 import type { DCGPRuntime } from "@dcgp/opencode";
 import { ALL_PATHS } from "@dcgp/paths";
 import type { ContextPath } from "@dcgp/core";
+import {
+  auditWorkspace,
+  BUILTIN_RULES,
+  type RuleId,
+  type Severity,
+} from "@dcgp/vibe-audit";
 
 export interface McpTool {
   readonly name: string;
@@ -132,6 +138,36 @@ export const TOOL_DEFINITIONS: readonly McpTool[] = [
       additionalProperties: false,
     },
   },
+  {
+    name: "dcgp_audit_vibe",
+    description:
+      "Static-analysis audit for AI-coded ('vibe-coded') flaws in a codebase. Runs 8 detectors (stub markers, hardcoded credentials, type-safety bypasses, command injection, test theater, predictable randomness, ReDoS risk, comment-density imbalance) and returns structured findings with file:line locations.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        dir: {
+          type: "string",
+          description: "Directory to scan. Default: the server's workspace path.",
+        },
+        rule: {
+          type: "string",
+          enum: BUILTIN_RULES.map((r) => r.id),
+          description: "Restrict to a single rule.",
+        },
+        severity: {
+          type: "string",
+          enum: ["info", "warn", "error", "critical"],
+          description: "Drop findings below this severity.",
+        },
+        noTs: {
+          type: "boolean",
+          default: false,
+          description: "Force regex-only mode (skip TypeScript AST detection).",
+        },
+      },
+      additionalProperties: false,
+    },
+  },
 ];
 
 /* ── Handlers ────────────────────────────────────────────────────────── */
@@ -140,6 +176,8 @@ export interface ToolHandlerContext {
   readonly runtime: DCGPRuntime;
   /** Auto-incrementing turn counter the handler uses when the client omits turn. */
   nextTurn(): number;
+  /** Default workspace path for audit / resource calls when client omits dir. */
+  readonly workspacePath: string;
 }
 
 export async function handleTool(
@@ -254,6 +292,16 @@ export async function handleTool(
           typeof args.contextWindowTokens === "number" ? args.contextWindowTokens : 128_000;
         const injected = ctx.runtime.injector.inject(active, { contextWindowTokens });
         return textResult(injected.xml);
+      }
+
+      case "dcgp_audit_vibe": {
+        const dir = typeof args.dir === "string" ? args.dir : ctx.workspacePath;
+        const rule = typeof args.rule === "string" ? (args.rule as RuleId) : undefined;
+        const minSeverity =
+          typeof args.severity === "string" ? (args.severity as Severity) : undefined;
+        const noTs = args.noTs === true;
+        const report = await auditWorkspace(BUILTIN_RULES, { dir, rule, minSeverity, noTs });
+        return textResult(JSON.stringify(report, null, 2));
       }
 
       default:

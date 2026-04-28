@@ -1,7 +1,9 @@
+// @dcgp-audit-ignore-file hardcoded-credentials - test fixtures inline a sample sk-... API key.
+// @dcgp-audit-ignore-file stub-markers - test fixtures inline a sample TODO comment.
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
@@ -17,7 +19,9 @@ import { createServer, type DCGPMcpServer } from "../src";
 function tempWorkspace(contents: Record<string, string> = {}): string {
   const dir = mkdtempSync(join(tmpdir(), "dcgp-mcp-"));
   for (const [rel, body] of Object.entries(contents)) {
-    writeFileSync(join(dir, rel), body, "utf8");
+    const abs = join(dir, rel);
+    mkdirSync(dirname(abs), { recursive: true });
+    writeFileSync(abs, body, "utf8");
   }
   return dir;
 }
@@ -52,10 +56,11 @@ describe("DCGP MCP server - tool discovery", () => {
     await teardown(h);
   });
 
-  it("lists all 8 DCGP tools", async () => {
+  it("lists all 9 DCGP tools (including dcgp_audit_vibe)", async () => {
     const response = await h.client.request({ method: "tools/list", params: {} }, ListToolsResultSchema);
     const names = response.tools.map((t) => t.name).sort();
     expect(names).toEqual([
+      "dcgp_audit_vibe",
       "dcgp_classify",
       "dcgp_gate_text",
       "dcgp_get_directive",
@@ -92,6 +97,8 @@ describe("DCGP MCP server - resource discovery", () => {
       expect(uris).toContain("dcgp://agents");
       expect(uris).toContain("dcgp://spec");
       expect(uris).toContain("dcgp://compliance");
+      expect(uris).toContain("dcgp://audit-rules");
+      expect(uris).toContain("dcgp://audit-config");
     } finally {
       await teardown(h);
     }
@@ -260,6 +267,48 @@ describe("DCGP MCP server - resource reads", () => {
       );
       const contents = result.contents[0] as { text: string };
       expect(contents.text).toContain("TEST-001");
+    } finally {
+      await teardown(h);
+    }
+  });
+
+  it("dcgp://audit-rules returns the 8-rule catalog", async () => {
+    const h = await startHarness(tempWorkspace());
+    try {
+      const result = await h.client.request(
+        { method: "resources/read", params: { uri: "dcgp://audit-rules" } },
+        ReadResourceResultSchema,
+      );
+      const contents = result.contents[0] as { text: string; mimeType?: string };
+      expect(contents.mimeType).toBe("application/json");
+      const parsed = JSON.parse(contents.text);
+      expect(parsed).toHaveLength(8);
+      expect(parsed.map((r: { id: string }) => r.id)).toContain("hardcoded-credentials");
+    } finally {
+      await teardown(h);
+    }
+  });
+
+  it("dcgp_audit_vibe scans a workspace and returns structured findings", async () => {
+    const workspace = tempWorkspace({
+      "src/x.ts": `// TODO: implement\nconst k = "sk-abcd1234abcd1234abcd1234abcd1234";\nexport { k };`,
+    });
+    const h = await startHarness(workspace);
+    try {
+      const result = await h.client.request(
+        {
+          method: "tools/call",
+          params: { name: "dcgp_audit_vibe", arguments: { dir: workspace } },
+        },
+        CallToolResultSchema,
+      );
+      const text = (result.content[0] as { type: "text"; text: string }).text;
+      const parsed = JSON.parse(text);
+      expect(parsed.findings.length).toBeGreaterThanOrEqual(2);
+      const ids = new Set(parsed.findings.map((f: { ruleId: string }) => f.ruleId));
+      expect(ids.has("hardcoded-credentials")).toBe(true);
+      expect(ids.has("stub-markers")).toBe(true);
+      expect(parsed.stats.filesScanned).toBeGreaterThanOrEqual(1);
     } finally {
       await teardown(h);
     }

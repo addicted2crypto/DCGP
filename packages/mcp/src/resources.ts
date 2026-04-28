@@ -16,6 +16,7 @@ import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
 import type { DCGPRuntime } from "@dcgp/opencode";
+import { BUILTIN_RULES } from "@dcgp/vibe-audit";
 
 export interface McpResource {
   readonly uri: string;
@@ -67,6 +68,18 @@ export const RESOURCE_DEFINITIONS: readonly McpResource[] = [
     description: "Declared conformance tier (single line).",
     mimeType: "text/plain",
   },
+  {
+    uri: "dcgp://audit-rules",
+    name: "Vibe-audit rules",
+    description: "Catalog of all builtin @dcgp/vibe-audit rules with id, severity, description.",
+    mimeType: "application/json",
+  },
+  {
+    uri: "dcgp://audit-config",
+    name: "Vibe-audit config",
+    description: "Project's .dcgp/audit.config.json (if present) - rule disables and per-glob overrides.",
+    mimeType: "application/json",
+  },
 ];
 
 export interface ResourceHandlerContext {
@@ -107,6 +120,28 @@ export async function readResource(
 
     case "dcgp://compliance":
       return fileResource(uri, ctx.workspacePath, "COMPLIANCE", "text/plain");
+
+    case "dcgp://audit-rules": {
+      const catalog = BUILTIN_RULES.map((r) => ({
+        id: r.id,
+        severity: r.severity,
+        description: r.description,
+        astAugmented: r.ast !== undefined,
+      }));
+      return textResource(uri, JSON.stringify(catalog, null, 2), "application/json");
+    }
+
+    case "dcgp://audit-config": {
+      const cfgPath = join(ctx.workspacePath, ".dcgp", "audit.config.json");
+      if (!existsSync(cfgPath)) {
+        return textResource(uri, "{}", "application/json");
+      }
+      try {
+        return textResource(uri, readFileSync(cfgPath, "utf8"), "application/json");
+      } catch {
+        return textResource(uri, "{}", "application/json");
+      }
+    }
 
     default:
       throw new Error(`Unknown resource URI: ${uri}`);

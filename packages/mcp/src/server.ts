@@ -40,6 +40,7 @@ export function createServer(opts: CreateServerOptions): DCGPMcpServer {
   let turnCounter = 0;
   const ctx: ToolHandlerContext = {
     runtime,
+    workspacePath: opts.workspacePath,
     nextTurn() {
       turnCounter += 1;
       return turnCounter;

@@ -1,3 +1,4 @@
+// @dcgp-audit-ignore-file regex-redos-risk - this file IS the canonical ReDoS-safe wrapper around new RegExp(...). All compilations here are gated by MAX_REGEX_PATTERN_LENGTH plus a nested-quantifier heuristic above the call site.
 /**
  * Hand-rolled validator for ContextPath - keeps @dcgp/core zero-runtime-dep.
  * DCGP-SPEC.md § 3 defines the schema; this module enforces it at load time
