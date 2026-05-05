@@ -2,7 +2,7 @@
 
 This file is a mount point. The canonical governance rules live in:
 
-1. [HARDRULES.md](./HARDRULES.md) - absolute user rules, override everything
+1. [HARDRULES.md](./HARDRULES.md) - absolute user rules, override everything do not overlook, EVER!!
 2. [AGENTS.md](./AGENTS.md) - full DCGP operational spec (7-step loop, formula, never-list)
 3. [DCGP-SPEC.md](./DCGP-SPEC.md) - normative protocol
 
