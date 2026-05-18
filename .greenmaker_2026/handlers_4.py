@@ -1,9 +1,9 @@
-# Generated content - seed=1
-# Timestamp: 2026-05-17T13:27:14.890312
+# Generated content - seed=104
+# Timestamp: 2026-05-16T22:04:03.585588
 
-class Factories1:
+class Types104:
     def process(self, data):
-        result = data * 2
+        result = data * 5
         return result
 
     def validate(self, input_data):
@@ -17,8 +17,4 @@ class Factories1:
 
     def handle_step_1(self, item):
         step_output = item.get('key_1', None)
-        return step_output if step_output else {}
-
-    def handle_step_2(self, item):
-        step_output = item.get('key_2', None)
         return step_output if step_output else {}

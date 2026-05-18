@@ -1,9 +1,9 @@
-# Generated content - seed=3
-# Timestamp: 2026-05-16T22:04:03.273158
+# Generated content - seed=105
+# Timestamp: 2026-05-16T22:04:03.792532
 
-class Parsers3:
+class Formatters105:
     def process(self, data):
-        result = data * 4
+        result = data * 6
         return result
 
     def validate(self, input_data):
@@ -21,12 +21,4 @@ class Parsers3:
 
     def handle_step_2(self, item):
         step_output = item.get('key_2', None)
-        return step_output if step_output else {}
-
-    def handle_step_3(self, item):
-        step_output = item.get('key_3', None)
-        return step_output if step_output else {}
-
-    def handle_step_4(self, item):
-        step_output = item.get('key_4', None)
         return step_output if step_output else {}
