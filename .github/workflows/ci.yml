@@ -33,11 +33,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Typecheck all packages
-        run: pnpm -r typecheck
-
+      # Build first: packages resolve cross-package types (e.g. @dcgp/core)
+      # via each dependency's built dist/*.d.ts. On a fresh checkout dist/ is
+      # gitignored and absent, so typechecking before building fails with
+      # "Cannot find module '@dcgp/core'". pnpm -r builds in topological order.
       - name: Build all packages
         run: pnpm -r build
+
+      - name: Typecheck all packages
+        run: pnpm -r typecheck
 
       - name: Run test suite
         run: pnpm vitest run
