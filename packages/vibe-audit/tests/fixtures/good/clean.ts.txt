@@ -1,0 +1,29 @@
+/**
+ * Clean fixture: no rules should fire.
+ */
+
+import { execSync } from "node:child_process";
+import { randomBytes } from "node:crypto";
+
+export function safeExec(branch: string): Buffer {
+  return execSync("git checkout " + JSON.stringify(branch));
+}
+
+export function safeToken(): string {
+  return randomBytes(16).toString("hex");
+}
+
+export function fromPattern(pattern: string): RegExp {
+  if (pattern.length > 300) throw new Error("pattern too long");
+  return new RegExp(pattern);
+}
+
+export function narrowUnknown(input: unknown): { id: number } | null {
+  if (typeof input === "object" && input !== null && "id" in input) {
+    return input as { id: number };
+  }
+  return null;
+}
+
+const cfg: Record<string, unknown> = {};
+export { cfg };

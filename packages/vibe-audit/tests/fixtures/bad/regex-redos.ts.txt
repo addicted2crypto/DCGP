@@ -1,0 +1,11 @@
+// Fixture for regex-redos-risk rule.
+
+export function compileUserRegex(input: string): RegExp {
+  // No length cap before this call - flagged.
+  return new RegExp(input);
+}
+
+// Catastrophic backtracking shape inside a literal.
+const BAD = /(a+)+/;
+
+export { BAD };

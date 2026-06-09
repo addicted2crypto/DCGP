@@ -1,0 +1,32 @@
+// This is a comment line.
+// This is another comment line restating what code does.
+// Yet another redundant comment.
+// This file is intentionally over-commented to trigger the density rule.
+// We have lots of comments here to push the ratio above 30%.
+
+// Define x as 1.
+const x = 1;
+// Define y as 2.
+const y = 2;
+// Add x and y together.
+const z = x + y;
+// Also add a thing.
+const w = z + 1;
+// More comments to imbalance ratio.
+const a = w + 1;
+// Keep adding comments.
+const b = a + 1;
+// And more comments.
+const c = b + 1;
+// Another comment.
+const d = c + 1;
+// One more comment for ratio.
+const e = d + 1;
+// Final comment.
+const f = e + 1;
+
+// Export everything.
+export { x, y, z, w, a, b, c, d, e, f };
+// Trailing comment.
+// And another.
+// And another.

@@ -1,0 +1,14 @@
+// Fixture file for the stub-markers rule.
+// Stored as .txt so the audit's own scan does not pick it up as a real source file.
+
+export function fetchUser(id: string) {
+  // TODO: implement caching
+  // FIXME: handle 404 properly
+  return getUserFromDb(id);
+}
+
+export function calculateRefund() {
+  throw new Error("not implemented");
+}
+
+declare function getUserFromDb(id: string): unknown;

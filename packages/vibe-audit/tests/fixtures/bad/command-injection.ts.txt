@@ -1,0 +1,11 @@
+// Fixture for command-injection rule.
+
+import { execSync } from "node:child_process";
+
+export function dangerous(filename: string) {
+  return execSync(`cat ${filename}`);
+}
+
+export function alsoDangerous(branch: string) {
+  return execSync(`git checkout ${branch}`);
+}

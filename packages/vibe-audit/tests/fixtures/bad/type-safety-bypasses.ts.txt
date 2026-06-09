@@ -1,0 +1,19 @@
+// Fixture for type-safety-bypasses rule.
+
+export function unsafeCast(input: unknown) {
+  return (input as any).foo;
+}
+
+export function doubleCast(input: unknown) {
+  return input as unknown as { id: number };
+}
+
+// @ts-ignore
+const broken: number = "string-but-ignored";
+
+// @ts-expect-error
+const alsoBroken: number = "string-but-expected";
+
+export function badAnnotation(x: any) {
+  return x.whatever;
+}

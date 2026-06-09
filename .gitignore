@@ -16,3 +16,6 @@ coverage/
 # but keep the ones DCGP actually ships.
 *.txt
 !public-surface.txt
+# Test fixtures use the *.ts.txt extension so they aren't compiled/linted as
+# TS source. They must be committed or CI has no fixtures to read (ENOENT).
+!packages/vibe-audit/tests/fixtures/**/*.txt

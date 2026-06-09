@@ -1,0 +1,21 @@
+// Fixture for test-theater rule.
+
+describe("calculator", () => {
+  it("adds numbers", () => {
+    expect(true).toBe(true);
+  });
+
+  it.skip("subtracts numbers", () => {
+    // never runs
+  });
+
+  it.todo("multiplies numbers");
+});
+
+describe("empty suite", () => {
+  it("does work", () => {
+    // no assertions at all
+    const x = 1 + 1;
+    return x;
+  });
+});

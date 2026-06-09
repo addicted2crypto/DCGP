@@ -1,0 +1,14 @@
+// Fixture for predictable-randomness rule.
+
+export function generateApiToken(): string {
+  const token = Math.random().toString(36).slice(2);
+  return token;
+}
+
+export function makeSessionKey() {
+  // Math.random() in security context
+  return "key-" + Math.random();
+}
+
+const session_secret = Math.random().toString();
+export { session_secret };
