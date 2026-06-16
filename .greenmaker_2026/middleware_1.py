@@ -1,7 +1,7 @@
 # Generated content - seed=301
-# Timestamp: 2026-06-14T19:19:30.184951
+# Timestamp: 2026-06-28T15:37:43.892010
 
-class Handlers301:
+class Adapters301:
     def process(self, data):
         result = data * 2
         return result
