@@ -32,15 +32,15 @@ jobs:
       id-token: write
     steps:
       - name: Checkout (full history for changelog)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           version: 9
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: pnpm
@@ -62,7 +62,7 @@ jobs:
       # the publish step below will kick in automatically.
       - name: Create Release PR (no publish until NPM_TOKEN is set)
         if: env.NPM_TOKEN == ''
-        uses: changesets/action@v1
+        uses: changesets/action@v2
         with:
           version: pnpm changeset version
           commit: 'chore: release'
@@ -74,7 +74,7 @@ jobs:
       - name: Create Release PR or Publish (NPM_TOKEN present)
         if: env.NPM_TOKEN != ''
         id: changesets
-        uses: changesets/action@v1
+        uses: changesets/action@v2
         with:
           version: pnpm changeset version
           publish: pnpm changeset publish
