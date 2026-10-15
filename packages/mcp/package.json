@@ -28,6 +28,6 @@
     "@dcgp/opencode": "workspace:*",
     "@dcgp/paths": "workspace:*",
     "@dcgp/vibe-audit": "workspace:*",
-    "@modelcontextprotocol/sdk": "^1.0.0"
+    "@modelcontextprotocol/sdk": "^1.30.0"
   }
 }
