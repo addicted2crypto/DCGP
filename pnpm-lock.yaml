@@ -62,8 +62,8 @@ importers:
         specifier: workspace:*
         version: link:../vibe-audit
       '@modelcontextprotocol/sdk':
-        specifier: ^1.0.0
-        version: 1.29.0(supports-color@7.2.0)(zod@4.3.6)
+        specifier: ^1.32.2
+        version: 1.32.2(supports-color@7.2.0)(zod@4.3.6)
 
   packages/opencode:
     dependencies:
@@ -561,8 +561,8 @@ packages:
     resolution: {integrity: sha512-6QEf6yqFbETdwGITKq57aYoPfX/3K8XFNwsAlx0C1M7o8cb79sv1M3w+tWuWvIcSbNqrLF7OD7YpZMVVz335hQ==}
     engines: {node: '>=20.0.0'}
 
-  '@modelcontextprotocol/sdk@1.29.0':
-    resolution: {integrity: sha512-zo37mZA9hJWpULgkRpowewez1y6ML5GsXJPY8FI0tBBCd77HEvza4jDqRKOXgHNn867PVGCyTdzqpz0izu5ZjQ==}
+  '@modelcontextprotocol/sdk@1.32.2':
+    resolution: {integrity: sha512-SWsVtH/0vULSQStoZ6xxH2K09Li8fXYTMC64ZeogCdpZ3XSi1eCPOByV1OpuJxuI3OcmHhosDWYyii07tpPsLw==}
     engines: {node: '>=18'}
     peerDependencies:
       '@cfworker/json-schema': ^4.1.1
@@ -969,6 +969,7 @@ packages:
   eslint@9.39.4:
     resolution: {integrity: sha512-XoMjdBOwe/esVgEvLmNsD3IRHkm7fbKIUGvrleloJXUZgDHig2IPWNniv+GwjyJXzuNqVjlr5+4yVUZjycJwfQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
     peerDependencies:
       jiti: '*'
@@ -2110,7 +2111,7 @@ snapshots:
       tinyglobby: 0.2.16
       yaml: 2.9.1
 
-  '@modelcontextprotocol/sdk@1.29.0(supports-color@7.2.0)(zod@4.3.6)':
+  '@modelcontextprotocol/sdk@1.32.2(supports-color@7.2.0)(zod@4.3.6)':
     dependencies:
       '@hono/node-server': 1.19.14(hono@4.12.14)
       ajv: 8.18.0
