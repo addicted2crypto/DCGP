@@ -1,7 +1,7 @@
 # Generated content - seed=1
-# Timestamp: 2026-11-06T17:38:56.639565
+# Timestamp: 2026-11-13T20:16:42.875774
 
-class Adapters1:
+class Factories1:
     def process(self, data):
         result = data * 2
         return result
